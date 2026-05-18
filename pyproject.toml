@@ -1,0 +1,32 @@
+[project]
+name = "intersystems_openapi3"
+version = "0.1.0"
+description = "OpenAPIv3.1 REST backend generator for InterSystems IRIS"
+readme = "README.md"
+requires-python = ">=3.9"
+authors = [
+  { name="Geet Kalra", email="geet.kalra@intersystems.com" },
+]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Intended Audience :: Developers",
+]
+license = "MIT"
+license-files = ["LICENSE.txt"]
+
+[project.scripts]
+intersystems_openapi3 = "intersystems_openapi3.main:main"
+
+[project.urls]
+Homepage = "https://github.com/intersystems-community/openapi3"
+Source = "https://github.com/intersystems-community/openapi3"
+Issues = "https://github.com/intersystems-community/openapi3/issues"
+Documentation = "https://github.com/intersystems-community/openapi3#readme"
+
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"

@@ -1,0 +1,39 @@
+{
+    "openapi": "3.1.0",
+    "info": {"title": "Test API", "version": "1.0.0"},
+    "paths": {
+        "/fruits": {
+            "get": {
+                "operationId": "listFruits",
+                "responses": {"200": {"description": "ok"}}
+            },
+            "post": {
+                "operationId": "createFruit",
+                "requestBody": {
+                    "required": true,
+                    "content": {"application/json": {"schema": {"type": "object"}}}
+                },
+                "responses": {"201": {"description": "created"}}
+            }
+        },
+        "/fruit/{fruitName}": {
+            "get": {
+                "operationId": "getFruit",
+                "parameters": [{"name": "fruitName", "in": "path", "required": true, "schema": {"type": "string"}}],
+                "responses": {"200": {"description": "ok"}}
+            }
+        },
+        "/stores/{storeId}": {
+            "get": {
+                "operationId": "getStore",
+                "parameters": [{"name": "storeId", "in": "path", "required": true}],
+                "responses": {"200": {"description": "ok"}}
+            }
+        },
+        "/items": {
+            "get":  {"responses": {"200": {"description": "ok"}}},
+            "post": {"responses": {"200": {"description": "ok"}}}
+        }
+    }
+}
+

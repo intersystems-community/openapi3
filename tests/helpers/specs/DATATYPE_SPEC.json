@@ -1,0 +1,22 @@
+{
+    "openapi": "3.1.0",
+    "info": {"title": "Datatype Test API", "version": "1.0.0"},
+    "paths": {
+        "/test/{username}/{tag}/{code}/{note}/{age}/{count32}/{count64}/{qty}": {
+            "get": {
+                "operationId": "testOperation",
+                "parameters": [
+                    {"name": "username",  "in": "path", "required": true, "schema": {"type": "string", "maxLength": 50}},
+                    {"name": "tag",       "in": "path", "required": true,"schema": {"type": "string", "minLength": 3}},
+                    {"name": "code",      "in": "path", "required": true,"schema": {"type": "string", "minLength": 3, "maxLength": 20}},
+                    {"name": "note",      "in": "path", "required": true,"schema": {"type": "string"}},
+                    {"name": "age",       "in": "path", "required": true,"schema": {"type": "integer", "minimum": 0, "maximum": 120}},
+                    {"name": "count32",   "in": "path", "required": true,"schema": {"type": "integer", "format": "int32"}},
+                    {"name": "count64",   "in": "path", "required": true,"schema": {"type": "integer", "format": "int64"}},
+                    {"name": "qty",   "in": "path", "required": true,"schema": {"type": "integer", "multipleOf": 5}}
+                ],
+                "responses": {"200": {"description": "ok"}}
+            }
+        }
+    }
+}

@@ -1,0 +1,321 @@
+{
+  "info": {
+    "name": "OpenAPI3 Generated Backend Tests",
+    "description": "Integration tests for the IRIS backend generated from the OpenAPI 3.1 specs in the test suite. Set the MAINSPEC_url and DATATYPESPEC_url variables to your deployed application root before running.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "MAINSPEC_url",
+      "value": "http://localhost:52773/path/to/iris/webApplication",
+      "type": "string"
+    },
+      {
+      "key": "DATATYPESPEC_url",
+      "value": "http://localhost:52773/path/to/iris/webApplication",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "MAIN_SPEC — TestApp",
+      "description": "Tests derived from MAIN_SPEC in test_generate_from_spec.py.\nEndpoints: GET /fruits, POST /fruits, GET /fruit/{fruitName}, GET /stores/{storeId}, GET /items, POST /items.",
+      "item": [
+        {
+          "name": "GET /fruits — happy path",
+          "request": {
+            "method": "GET",
+            "url": "{{MAINSPEC_url}}/fruits",
+            "header": [{ "key": "Accept", "value": "application/json" }]
+          },
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                "pm.test('response time under 5s', () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+              ]
+            }
+          }]
+        },
+        {
+          "name": "POST /fruits — valid JSON body",
+          "request": {
+            "method": "POST",
+            "url": "{{MAINSPEC_url}}/fruits",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\"name\": \"apple\", \"color\": \"red\"}" }
+          },
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "pm.test('status is 200 or 201', () => pm.expect(pm.response.code).to.be.oneOf([200, 201]));"
+              ]
+            }
+          }]
+        },
+        {
+          "name": "POST /fruits — missing body → 400",
+          "request": {
+            "method": "POST",
+            "url": "{{MAINSPEC_url}}/fruits",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "" }
+          },
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "pm.test('missing required body returns 400', () => pm.response.to.have.status(400));"
+              ]
+            }
+          }]
+        },
+        {
+          "name": "POST /fruits — wrong content-type → 415",
+          "request": {
+            "method": "POST",
+            "url": "{{MAINSPEC_url}}/fruits",
+            "header": [{ "key": "Content-Type", "value": "text/plain" }],
+            "body": { "mode": "raw", "raw": "plain text body" }
+          },
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "pm.test('unsupported content-type returns 415', () => pm.response.to.have.status(415));"
+              ]
+            }
+          }]
+        },
+        {
+          "name": "GET /fruit/{fruitName} — typed path param",
+          "request": {
+            "method": "GET",
+            "url": "{{MAINSPEC_url}}/fruit/apple",
+            "header": [{ "key": "Accept", "value": "application/json" }]
+          },
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                "pm.test('route resolved (not 404)', () => pm.expect(pm.response.code).to.not.equal(404));"
+              ]
+            }
+          }]
+        },
+        {
+          "name": "GET /stores/{storeId} — untyped path param",
+          "request": {
+            "method": "GET",
+            "url": "{{MAINSPEC_url}}/stores/store-789",
+            "header": [{ "key": "Accept", "value": "application/json" }]
+          },
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                "pm.test('route resolved (not 404)', () => pm.expect(pm.response.code).to.not.equal(404));"
+              ]
+            }
+          }]
+        },
+        {
+          "name": "GET /items — auto-assigned operationId",
+          "request": {
+            "method": "GET",
+            "url": "{{MAINSPEC_url}}/items",
+            "header": [{ "key": "Accept", "value": "application/json" }]
+          },
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "pm.test('status is 200', () => pm.response.to.have.status(200));"
+              ]
+            }
+          }]
+        },
+        {
+          "name": "POST /items — auto-assigned operationId",
+          "request": {
+            "method": "POST",
+            "url": "{{MAINSPEC_url}}/items",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{}" }
+          },
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "pm.test('status is 200', () => pm.response.to.have.status(200));"
+              ]
+            }
+          }]
+        }
+      ]
+    },
+    {
+      "name": "DATATYPE_SPEC — TestApp",
+      "description": "Tests derived from DATATYPE_SPEC in test_handle_datatypes.py.\nAll parameters are path params on GET /test/{username}/{tag}/{code}/{emptyTag}/{note}/{age}/{count32}/{count64}/{qty}.\n\nNOTE: emptyTag has maxLength 0, so an empty path segment may not route correctly on all servers — that test is marked as expected-to-fail with a note.",
+      "item": [
+        {
+          "name": "GET /test — all params valid → 200",
+          "request": {
+            "method": "GET",
+            "url": "{{DATATYPESPEC_url}}/test/alice/abc/hello5/anything/25/100/100/10"
+          },
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "pm.test('all valid params returns 200', () => pm.response.to.have.status(200));"
+              ]
+            }
+          }]
+        },
+        {
+          "name": "GET /test — username too long (51 chars, maxLength 50) → 400",
+          "request": {
+            "method": "GET",
+            "url": "{{DATATYPESPEC_url}}/test/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/abc/hello5/anything/25/100/100/10"
+          },
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "pm.test('username over maxLength 50 returns 400', () => pm.response.to.have.status(400));"
+              ]
+            }
+          }]
+        },
+        {
+          "name": "GET /test — tag too short (2 chars, minLength 3) → 400",
+          "request": {
+            "method": "GET",
+            "url": "{{DATATYPESPEC_url}}/test/alice/ab/hello5/anything/25/100/100/10"
+          },
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "pm.test('tag under minLength 3 returns 400', () => pm.response.to.have.status(400));"
+              ]
+            }
+          }]
+        },
+        {
+          "name": "GET /test — code too long (21 chars, maxLength 20) → 400",
+          "request": {
+            "method": "GET",
+            "url": "{{DATATYPESPEC_url}}/test/alice/abc/aaaaaaaaaaaaaaaaaaaaa/anything/25/100/100/10"
+          },
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "pm.test('code over maxLength 20 returns 400', () => pm.response.to.have.status(400));"
+              ]
+            }
+          }]
+        },
+        {
+          "name": "GET /test — code too short (2 chars, minLength 3) → 400",
+          "request": {
+            "method": "GET",
+            "url": "{{DATATYPESPEC_url}}/test/alice/abc/ab/anything/25/100/100/10"
+          },
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "pm.test('code under minLength 3 returns 400', () => pm.response.to.have.status(400));"
+              ]
+            }
+          }]
+        },
+        {
+          "name": "GET /test — age above maximum (121, max 120) → 400",
+          "request": {
+            "method": "GET",
+            "url": "{{DATATYPESPEC_url}}/test/alice/abc/hello5/anything/121/100/100/10"
+          },
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "pm.test('age above maximum 120 returns 400', () => pm.response.to.have.status(400));"
+              ]
+            }
+          }]
+        },
+        {
+          "name": "GET /test — age below minimum (-1, min 0) → 400",
+          "request": {
+            "method": "GET",
+            "url": "{{DATATYPESPEC_url}}/test/alice/abc/hello5/anything/-1/100/100/10"
+          },
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "pm.test('age below minimum 0 returns 400', () => pm.response.to.have.status(400));"
+              ]
+            }
+          }]
+        },
+        {
+          "name": "GET /test — count32 exceeds int32 max (2147483648) → 400",
+          "request": {
+            "method": "GET",
+            "url": "{{DATATYPESPEC_url}}/test/alice/abc/hello5/anything/25/2147483648/100/10"
+          },
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "pm.test('count32 above int32 max (2147483647) returns 400', () => pm.response.to.have.status(400));"
+              ]
+            }
+          }]
+        },
+        {
+          "name": "GET /test — count64 exceeds int64 max (9223372036854775808) → 400",
+          "request": {
+            "method": "GET",
+            "url": "{{DATATYPESPEC_url}}/test/alice/abc/hello5/anything/25/100/9223372036854775808/10"
+          },
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "pm.test('count64 above int64 max returns 400', () => pm.response.to.have.status(400));"
+              ]
+            }
+          }]
+        },
+        {
+          "name": "GET /test — qty not a multiple of 5 (7) → 400",
+          "request": {
+            "method": "GET",
+            "url": "{{DATATYPESPEC_url}}/test/alice/abc/hello5/anything/25/100/100/7"
+          },
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "pm.test('qty not a multiple of 5 returns 400', () => pm.response.to.have.status(400));"
+              ]
+            }
+          }]
+        }
+      ]
+    }
+  ]
+}
