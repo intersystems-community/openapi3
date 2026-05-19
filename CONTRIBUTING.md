@@ -10,25 +10,6 @@ Before starting work on your pull request, please be aware of the following guid
 
 ## Contributing a pull request
 
-### Prerequisites
-
-1. Python 3.11
-1. Windows, macOS, or Linux
-
-### Setup
-
-None.
-
-### Run dev build and validate your changes
-
-TBD.
-
-### Pull requests
-
-Work should be done on a unique branch -- not the master branch. Pull requests require the approval of the maintainer, as described in the [Governance document](GOVERNANCE.md). In addition to that, it's often good to request a review by someone familiar with the technical details of your particular pull request.
+Work should be done on a unique branch -- not the master branch. Pull requests require the approval of the maintainer, as described in the [Governance document](https://github.com/intersystems-community/openapi3/blob/main/GOVERNANCE.md). In addition to that, it's often good to request a review by someone familiar with the technical details of your particular pull request.
 
 We expect CI to be passing for a pull request before we will consider merging it.
-
-## Beta versions
-
-Any change to `master` branch will call CI, which will produce [beta release](https://github.com/intersystems-community/openapi3/releases), which can be manually installed.
