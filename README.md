@@ -4,7 +4,7 @@ A CLI tool that generates InterSystems IRIS CSP REST backend classes from an Ope
 
 ## Requirements
 
-- Python 3.9+
+- Python 3.10+
 - A valid OpenAPI 3.1.x spec in JSON format
 
 ## Installation
