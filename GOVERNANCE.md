@@ -1,4 +1,4 @@
-# vscode-objectscript Governance
+# openapi3 Governance
 
 ## Overview
 
@@ -47,7 +47,7 @@ Committers have no authority over the overall direction of the project. However,
 
 ## Contribution process
 
-See [CONTRIBUTING.md]
+See [CONTRIBUTING.md](https://github.com/intersystems-community/openapi3/blob/main/CONTRIBUTING.md)
 
 ## Decision making process
 
