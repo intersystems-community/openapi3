@@ -2,7 +2,17 @@ import json
 import pytest
 from pathlib import Path
 
+import intersystems_openapi3.main as main
 from intersystems_openapi3.main import generate_from_spec
+
+
+# Regenerating an existing impl now delegates to a live IRIS instance. These are
+# generation tests, so stub that out: when an impl file already exists, just keep
+# the freshly generated text instead of connecting to IRIS.
+@pytest.fixture(autouse=True)
+def _no_iris(monkeypatch):
+    monkeypatch.setattr(main, "regenerate_impl",
+                        lambda new_text, old_text, class_name: new_text)
 
 
 # ── helpers ───────────────────────────────────────────────────────────────────

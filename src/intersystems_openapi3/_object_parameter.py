@@ -4,10 +4,8 @@ from ._handle_datatypes import DATATYPE_MAP, generate_string_parameter_template,
 
 
 def check_schema(param: dict[str, Any]) -> str:
-
     if param_type:= param.get("schema", {}).get("type"):
-        return " As " + DATATYPE_MAP.get(param_type, "%String")    
-    print(f"WARNING: No schema associated with parameter {param['name']} or it is not a dictionary")
+        return " As " + DATATYPE_MAP.get(param_type, "%String")
     return ""
 
 def generate_params_for_method_definition(all_params: list[dict[str, Any]]) -> str:

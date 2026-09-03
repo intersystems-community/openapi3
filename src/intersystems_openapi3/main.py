@@ -10,6 +10,7 @@ from ._object_parameter import (generate_params_for_method_definition, generate_
                             split_parameters, merge_parameters, generate_parameter_stubs)
 from ._object_requestBody_response import generate_request_body_handling, response_media_types
 from ._sanitize import sanitize_names, sanitize_comments
+from ._regenerate_impl import regenerate_impl
 
 
 def get_version() -> str:
@@ -108,6 +109,11 @@ def generate_routes_and_methods(json_obj: dict[str, Any], app_name: str) -> tupl
                     all_params = merge_parameters(path_level_params,operation_level_params)
                     path_params, query_params, header_params, cookie_params = split_parameters(all_params)
 
+
+                    for p in all_params:
+                        if not p.get("schema", {}).get("type"):
+                            print(f"WARNING: No schema associated with parameter {p.get('name')} or it is not a dictionary")
+
                     ## Generate method for dispatch class
                     is_put_post_patch = operation in {"put", "post", "patch"}
                     dispatch_method= generate_disp_method(operation_details,summary, description,operation_id,path_params,all_params,app_name,is_put_post_patch)
@@ -153,7 +159,17 @@ def compile_classes(json_obj: dict[str, Any], routes: list[str], disp_methods: l
    
     return disp_str, impl_str
 
-def generate_from_spec(spec_file_path: Path, out_path: Path, app_name: str, overwrite_impl: bool = True) -> None:
+def _write_atomic(target: Path, content: str) -> None:
+    """
+     Write via a temp file in the same directory, then replace the target.
+    """
+    tmp = target.with_suffix(target.suffix + ".tmp")
+    with open(tmp, "w", encoding="utf-8", newline="\n") as f:
+        f.write(content)
+    tmp.replace(target)
+
+
+def generate_from_spec(spec_file_path: Path, out_path: Path, app_name: str) -> None:
 
     with open(spec_file_path,'r', encoding="utf-8") as f:
         json_object = json.load(f)
@@ -165,22 +181,32 @@ def generate_from_spec(spec_file_path: Path, out_path: Path, app_name: str, over
     else:
         print("Error: Invalid specification file. Please make sure that the 'openapi' key is present in the json spec")
         return
-    
+
     routes, disp_methods, impl_methods = generate_routes_and_methods(json_object, app_name)
     disp_str,impl_str = compile_classes(json_object, routes, disp_methods, impl_methods, spec_file_path, app_name)
 
     disp_class = out_path / f"{app_name}.disp.cls"
-    with open(disp_class, "w", encoding="utf-8", newline="\n") as f:
-        f.write(disp_str)
-    
+    _write_atomic(disp_class, disp_str)
 
-    if not overwrite_impl:
-        print("Implementation file not overwritten")
-        return
-
+    # The implementation class is merged, not overwritten
     impl_class = out_path / f"{app_name}.impl.cls"
-    with open(impl_class, "w", encoding="utf-8", newline="\n") as f:
-        f.write(impl_str)
+    existing_impl = impl_class.read_text(encoding="utf-8") if impl_class.exists() else None
+
+    if existing_impl is None:
+        _write_atomic(impl_class, impl_str)
+
+    else:
+        try:
+            print(" An implementation file with the same name already exists at the output location.")
+            print(" You will have to connect to your IRIS instance to make sure any modifications are not overwritten.")
+            print(" If you do not wish to connect to IRIS, delete the existing implementaion file or generate the files in a new folder")
+            merged_impl = regenerate_impl(impl_str, existing_impl, f"{app_name}.impl")
+        except ValueError as e:
+            print(f"Error: could not merge into existing {impl_class} ({e}).")
+            print("The existing implementation file was left unchanged.")
+            return
+
+        _write_atomic(impl_class, merged_impl)
 
 
 
@@ -211,12 +237,9 @@ def main():
     else:
         out_path = spec_file_path.parent
 
-    overwrite_impl = True
-    impl_class = out_path / f"{app_name}.impl.cls"
-    if impl_class.exists():
-        user_response = input(f"{impl_class} already exists. Overwrite? (yes/no): ")
-        if user_response.strip().lower() != "yes":
-            overwrite_impl = False
+    generate_from_spec(spec_file_path, out_path, app_name)
 
-    generate_from_spec(spec_file_path, out_path, app_name, overwrite_impl)
+
+if __name__ == "__main__":
+    main()
 
