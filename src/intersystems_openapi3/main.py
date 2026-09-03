@@ -200,7 +200,12 @@ def generate_from_spec(spec_file_path: Path, out_path: Path, app_name: str) -> N
             print(" An implementation file with the same name already exists at the output location.")
             print(" You will have to connect to your IRIS instance to make sure any modifications are not overwritten.")
             print(" If you do not wish to connect to IRIS, delete the existing implementaion file or generate the files in a new folder")
+            print(" To use the merge tool, you must install the intersystems-irispython library using : pip install intersystems-irispython")
             merged_impl = regenerate_impl(impl_str, existing_impl, f"{app_name}.impl")
+        except ImportError:
+          print(" To use the merge tool, install intersystems-irispython: pip install intersystems-irispython")
+          print(" The existing implementation file was left unchanged.")
+          return
         except ValueError as e:
             print(f"Error: could not merge into existing {impl_class} ({e}).")
             print("The existing implementation file was left unchanged.")
