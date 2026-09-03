@@ -22,11 +22,11 @@ def get_args() -> dict:
         return os.getenv(env_name) or input(prompt).strip()
 
     return {
-        "hostname": value("IRIS_HOSTNAME", "IRIS hostname: "),
-        "port": int(value("IRIS_PORT", "IRIS port: ")),
-        "namespace": value("IRIS_NAMESPACE", "IRIS namespace: "),
-        "username": value("IRIS_USERNAME", "IRIS username: "),
-        "password": os.getenv("IRIS_PASSWORD") or getpass("IRIS password: "),
+        "hostname": value("IRIS_HOSTNAME", "IRIS_HOSTNAME: "),
+        "port": int(value("IRIS_PORT", "IRIS_PORT: ")),
+        "namespace": value("IRIS_NAMESPACE", "IRIS_NAMESPACE: "),
+        "username": value("IRIS_USERNAME", "IRIS_USERNAME: "),
+        "password": os.getenv("IRIS_PASSWORD") or getpass("IRIS_PASSWORD: "),
     }
 
 def regenerate_impl( new_text: str, old_text: str, class_name: str) -> str:
