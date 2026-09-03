@@ -1,6 +1,6 @@
 [project]
 name = "intersystems_openapi3"
-version = "0.2.0"
+version = "0.2.1"
 description = "OpenAPIv3.1 REST backend generator for InterSystems IRIS"
 readme = "README.md"
 requires-python = ">=3.9"
