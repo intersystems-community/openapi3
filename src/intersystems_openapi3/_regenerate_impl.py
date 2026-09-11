@@ -23,7 +23,7 @@ def get_args() -> dict:
 
     return {
         "hostname": value("IRIS_HOSTNAME", "IRIS_HOSTNAME: "),
-        "port": int(value("IRIS_PORT", "IRIS_PORT: ")),
+        "port": int(value("IRIS_SUPERSERVER_PORT", "IRIS_SUPERSERVER_PORT: ")),
         "namespace": value("IRIS_NAMESPACE", "IRIS_NAMESPACE: "),
         "username": value("IRIS_USERNAME", "IRIS_USERNAME: "),
         "password": os.getenv("IRIS_PASSWORD") or getpass("IRIS_PASSWORD: "),
@@ -32,7 +32,7 @@ def get_args() -> dict:
 def regenerate_impl( new_text: str, old_text: str, class_name: str) -> str:
     """Update old method arguments and return types from a new class."""
 
-    print(" Set these as environment variables to avoid entering each time")
+    print("\nSet these as environment variables to avoid entering each time")
 
     args = get_args()
     myiris, namespace = iris_conn(args)
