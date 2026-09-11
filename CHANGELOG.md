@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.2] - 2026-09-11
+
+### Updated
+- renamed IRIS_PORT to IRIS_SUPERSERVER_PORT
+- added new display messages for successful file creation
+
+
 ## [0.2.1] - 2026-09-03
 
 ### Fixed
